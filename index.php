@@ -14,12 +14,10 @@ class ShoppingCart
             'price' => 59.90,
             'stock' => 10],
 
-
             ['id' => 2,
             'name' => 'Calça Jeans',
             'price' => 129.90,
             'stock' => 5],
-
 
             ['id' => 3,
             'name' => 'Tênis',
@@ -31,11 +29,11 @@ class ShoppingCart
 
     public function showProducts(): void
     {
-        echo "Produtos disponíveis:\n";
+        echo "<h3>Produtos disponíveis:</h3>";
         foreach ($this->products as $product) {
-            echo "- ID {$product['id']} | {$product['name']} | R$ {$product['price']} | stock: {$product['stock']}\n";
+            echo "- ID {$product['id']} | {$product['name']} | R$ {$product['price']} | stock: {$product['stock']}<br>";
         }
-        echo ' ';
+        echo '<br>';
     }
 
 
@@ -43,14 +41,14 @@ class ShoppingCart
     {
         foreach ($this->products as &$product) {
             if ($product['id'] === $id) {
-                if ($product['stock'] < $quantity) {
-                    echo "Não foi possivel adicionar ao carrinho. O {$product['name']} tem apenas {$product['stock']} unidades.\n";
+                if ($product['stock'] < $quantity & $product['stock'] >= 1) {
+                    echo "Não foi possivel adicionar ao carrinho. O {$product['name']} tem apenas {$product['stock']} unidades.<br>";
                     return;
                 }
 
 
                 if ($product['stock'] == 0) {
-                    echo "Produto esgotado!\n";
+                    echo "Produto esgotado!<br>";
                     return;
                 }
 
@@ -64,13 +62,13 @@ class ShoppingCart
 
 
                 $product['stock'] -= $quantity;
-                echo "{$product['name']} adicionado ao carrinho ({$quantity} un).\n";
+                echo "{$product['name']} adicionado ao carrinho ({$quantity} un).<br>";
                 return;
             }
         }
 
 
-        echo " Produto não encontrado.\n";
+        echo " Produto não encontrado.<br>";
     }
 
     public function itemsExists(int $id): bool 
@@ -90,7 +88,7 @@ class ShoppingCart
     {
         if (!$this->itemsExists($id)) 
         {
-            echo "Produto não encontrado no carrinho. \n";
+            echo "Produto não encontrado no carrinho. <br>";
             return;
         }
 
@@ -106,7 +104,7 @@ class ShoppingCart
                 }
 
                 unset($this->cart[$key]);
-                echo "Produto ID {$id} removido do carrinho e estoque atualizado. \n";
+                echo "Produto {$product['name']} (ID {$id}), foi removido do carrinho e o estoque atualizado.<br>";
                 return;
 
             }
@@ -118,30 +116,35 @@ class ShoppingCart
     {
         if(empty($this->cart))
         {
-            echo "Carrinho vazio. \n";
+            echo "Carrinho vazio. <br>";
             return;
         }
 
-        echo "Itens no carrinho: \n";
+        echo "<h3>Itens no carrinho: </h3>";
         $total = 0;
+
         foreach ($this->cart as $item)
         {
-            echo "- {$item['name']} | {$item['quantity']} unidades | Subtotal: R$ {$item['subtotal']}\n";
+            echo "- {$item['name']} | {$item['quantity']} unidades | Subtotal: R$ {$item['subtotal']}<br>";
             $total += $item['subtotal'];
 
         }
 
-        echo "TOTAL: R$ {$total}\n\n";
+        echo "<strong>Total do carrinho: R$ {$total}</strong><br>";
+        echo "<br>";
 
     }
     
 }
 
+echo "<h1>Bem-vindo ao aplicativo de compras!</h1>";
 $p = new ShoppingCart();
 $p->showProducts();      
-$p->add(1, 2);        
+$p->add(1, 2);  
+$p->add(3, 10);        
 $p->add(3, 3);        
 $p->showCart();      
 $p->removeProduct(1);
 $p->showCart();
 $p->showProducts();
+$p->add(3, 1);     
