@@ -41,7 +41,7 @@ class ShoppingCart
     {
         foreach ($this->products as &$product) {
             if ($product['id'] === $id) {
-                if ($product['stock'] < $quantity & $product['stock'] >= 1) {
+                if ($product['stock'] < $quantity && $product['stock'] >= 1) {
                     echo "Não foi possivel adicionar ao carrinho. O {$product['name']} tem apenas {$product['stock']} unidades.<br>";
                     return;
                 }
@@ -134,8 +134,30 @@ class ShoppingCart
         echo "<br>";
 
     }
+
+    public function applyDiscount(string $coupon): void{
+        if (empty($this->cart)) {
+            echo "Carrinho vazio, não é possível aplicar desconto.<br>";
+            return;
+        }
+
+        $total = 0;
+        foreach ($this->cart as $item) {
+            $total += $item['subtotal'];
+        }
+
+        if ($coupon === "DESCONTO10") {
+            $discount = $total * 0.10;
+            $finalTotal = $total - $discount;
+            echo"cupom aplicado: DESCONTO10 (-10%)<br>";
+            echo "<strong>Total com desconto aplicado: R$ {$finalTotal}</strong><br>";
+        } else {
+            echo "Cupom inválido.<br>";
+        }
+    }
     
 }
+
 
 echo "<h1>Bem-vindo ao aplicativo de compras!</h1>";
 $p = new ShoppingCart();
@@ -147,4 +169,5 @@ $p->showCart();
 $p->removeProduct(1);
 $p->showCart();
 $p->showProducts();
-$p->add(3, 1);     
+$p->add(3, 1);    
+$p->applyDiscount("DESCONTO10");
