@@ -1,10 +1,9 @@
 <?php
 
-
 class ShoppingCart
 {
     public $products;
-    public $cartShop = [];
+    public $cart = [];
 
 
     public function __construct()
@@ -40,11 +39,11 @@ class ShoppingCart
     }
 
 
-    public function Add(int $id, int $amount): void
+    public function Add(int $id, int $quantity): void
     {
         foreach ($this->products as &$product) {
             if ($product['id'] === $id) {
-                if ($product['stock'] < $amount) {
+                if ($product['stock'] < $quantity) {
                     echo "Não foi possivel adicionar ao carrinho. O {$product['name']} tem apenas {$product['stock']} unidades.\n";
                     return;
                 }
@@ -56,15 +55,16 @@ class ShoppingCart
                 }
 
 
-                $this->cartShop[] = [
-                    'id_produto' => $id,
-                    'quantidade' => $amount,
-                    'subtotal' => $product['price'] * $amount
+                $this->cart[] = [
+                    'product_id' => $id,
+                    'name' => $product['name'],
+                    'quantity' => $quantity,
+                    'subtotal' => $product['price'] * $quantity
                 ];
 
 
-                $product['stock'] -= $amount;
-                echo "{$product['name']} adicionado ao carrinho ({$amount} un).\n";
+                $product['stock'] -= $quantity;
+                echo "{$product['name']} adicionado ao carrinho ({$quantity} un).\n";
                 return;
             }
         }
@@ -72,13 +72,76 @@ class ShoppingCart
 
         echo " Produto não encontrado.\n";
     }
+
+    public function itemsExists(int $id): bool 
+    {
+        foreach ($this->cart as $item) {
+            if ($item['product_id'] === $id) 
+            {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    public function removeProduct(int $id): void 
+    {
+        if (!$this->itemsExists($id)) 
+        {
+            echo "Produto não encontrado no carrinho. \n";
+            return;
+        }
+
+        foreach ($this->cart as $key => $item)
+        {
+            if ($item['product_id'] === $id)
+            {
+                foreach ($this->products as &$product) {
+                    if ($product['id'] === $id) {
+                        $product['stock'] += $item['quantity'];
+                        break;
+                    }
+                }
+
+                unset($this->cart[$key]);
+                echo "Produto ID {$id} removido do carrinho e estoque atualizado. \n";
+                return;
+
+            }
+        }      
+
+    }
+
+    public function showCart(): void 
+    {
+        if(empty($this->cart))
+        {
+            echo "Carrinho vazio. \n";
+            return;
+        }
+
+        echo "Itens no carrinho: \n";
+        $total = 0;
+        foreach ($this->cart as $item)
+        {
+            echo "- {$item['name']} | {$item['quantity']} unidades | Subtotal: R$ {$item['subtotal']}\n";
+            $total += $item['subtotal'];
+
+        }
+
+        echo "TOTAL: R$ {$total}\n\n";
+
+    }
+    
 }
-
-
-
 
 $p = new ShoppingCart();
 $p->showProducts();      
 $p->add(1, 2);        
 $p->add(3, 3);        
-$p->showProducts();      
+$p->showCart();      
+$p->removeProduct(1);
+$p->showCart();
+$p->showProducts();
